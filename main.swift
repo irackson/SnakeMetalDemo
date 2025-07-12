@@ -58,6 +58,11 @@ class GameView: MTKView, MTKViewDelegate {
         pipeline = try! self.device!.makeRenderPipelineState(descriptor: pd)
 
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { e in
+            if e.modifierFlags.contains(.command),
+               e.charactersIgnoringModifiers == "q" {
+                NSApp.terminate(nil)
+                return nil
+            }
             switch e.keyCode {
             case 123: self.dir = (-1, 0)
             case 124: self.dir = ( 1, 0)
@@ -87,6 +92,10 @@ class GameView: MTKView, MTKViewDelegate {
                 food = (Int.random(in: 0..<gridSize), Int.random(in: 0..<gridSize))
             } else {
                 snake.removeLast()
+            }
+            if snake.dropFirst().contains(where: { $0 == head }) {
+                NSApp.terminate(nil)
+                return
             }
         }
 
