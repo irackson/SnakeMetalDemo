@@ -1,0 +1,18 @@
+name: macOS Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build SnakeMetalDemo
+        run: swiftc -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+          -framework Cocoa -framework Metal -framework MetalKit \
+          main.swift -o SnakeMetalDemo
+
+      - name: Run the demo
+        run: ./SnakeMetalDemo || true
