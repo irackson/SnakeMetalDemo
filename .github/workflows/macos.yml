@@ -9,10 +9,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build SnakeMetalDemo
-        run: swiftc -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
-          -framework Cocoa -framework Metal -framework MetalKit \
-          main.swift -o SnakeMetalDemo
+      - name: Compile SnakeMetalDemo
+        run: |
+          # Compile with Xcode’s SDK on macos-latest runner
+          swiftc -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            -framework Cocoa   \
+            -framework Metal   \
+            -framework MetalKit \
+            main.swift -o SnakeMetalDemo
 
-      - name: Run the demo
-        run: ./SnakeMetalDemo || true
+      - name: (Optional) Run the demo
+        run: |
+          # Exit zero so CI step doesn’t fail; used for smoke testing
+          ./SnakeMetalDemo || true
