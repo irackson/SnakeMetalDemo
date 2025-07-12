@@ -7,18 +7,23 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out code
+        uses: actions/checkout@v4
 
       - name: Compile SnakeMetalDemo
         run: |
-          # Compile with Xcode’s SDK on macos-latest runner
           swiftc -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
-            -framework Cocoa   \
-            -framework Metal   \
+            -framework Cocoa \
+            -framework Metal \
             -framework MetalKit \
             main.swift -o SnakeMetalDemo
 
-      - name: (Optional) Run the demo
+      - name: Smoke-test the binary
         run: |
-          # Exit zero so CI step doesn’t fail; used for smoke testing
-          ./SnakeMetalDemo || true
+          # GitHub Actions sets GITHUB_ACTIONS=true
+          if [ "${GITHUB_ACTIONS}" = "true" ]; then
+            echo "CI detected – skipping interactive demo run"
+          else
+            echo "Launching the demo for local smoke-test"
+            ./SnakeMetalDemo
+          fi
