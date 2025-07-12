@@ -31,7 +31,7 @@ fragment float4 fragment_main(Varying in [[stage_in]]) {
 }
 """
 
-xclass GameView: MTKView, MTKViewDelegate {
+class GameView: MTKView, MTKViewDelegate {
     struct Vertex { var position: SIMD2<Float>; var color: SIMD4<Float> }
     let gridSize = 20
     var snake = [(10,10),(9,10),(8,10)]
