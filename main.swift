@@ -38,6 +38,8 @@ class GameView: MTKView, MTKViewDelegate {
     var dir = (dx: 1, dy: 0)
     var food = (15,15)
     var lastUpdate = CACurrentMediaTime()
+    var isGameOver = false
+    var gameOverLabel: NSTextField?
     var pipeline: MTLRenderPipelineState!
     var commandQueue: MTLCommandQueue!
 
@@ -78,24 +80,42 @@ class GameView: MTKView, MTKViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func showGameOver() {
+        guard !isGameOver else { return }
+        isGameOver = true
+        NSSound(named: NSSound.Name("Basso"))?.play()
+        let label = NSTextField(labelWithString: "You lose! Length: \(snake.count)")
+        label.textColor = .white
+        label.backgroundColor = NSColor.black.withAlphaComponent(0.7)
+        label.font = NSFont.boldSystemFont(ofSize: 24)
+        label.sizeToFit()
+        label.frame.origin = CGPoint(
+            x: bounds.midX - label.frame.width / 2,
+            y: bounds.midY - label.frame.height / 2)
+        label.autoresizingMask = [.minXMargin, .maxXMargin, .minYMargin, .maxYMargin]
+        addSubview(label)
+        gameOverLabel = label
+    }
+
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) { }
 
     func draw(in view: MTKView) {
-        let now = CACurrentMediaTime()
-        if now - lastUpdate > 0.15 {
-            lastUpdate = now
-            var head = snake[0]
-            head = ((head.0 + dir.dx + gridSize) % gridSize,
-                    (head.1 + dir.dy + gridSize) % gridSize)
-            snake.insert(head, at: 0)
-            if head == food {
-                food = (Int.random(in: 0..<gridSize), Int.random(in: 0..<gridSize))
-            } else {
-                snake.removeLast()
-            }
-            if snake.dropFirst().contains(where: { $0 == head }) {
-                NSApp.terminate(nil)
-                return
+        if !isGameOver {
+            let now = CACurrentMediaTime()
+            if now - lastUpdate > 0.15 {
+                lastUpdate = now
+                var head = snake[0]
+                head = ((head.0 + dir.dx + gridSize) % gridSize,
+                        (head.1 + dir.dy + gridSize) % gridSize)
+                snake.insert(head, at: 0)
+                if head == food {
+                    food = (Int.random(in: 0..<gridSize), Int.random(in: 0..<gridSize))
+                } else {
+                    snake.removeLast()
+                }
+                if snake.dropFirst().contains(where: { $0 == head }) {
+                    showGameOver()
+                }
             }
         }
 
