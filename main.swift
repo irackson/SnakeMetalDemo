@@ -122,6 +122,7 @@ class GameView: MTKView, MTKViewDelegate {
 }
 
 let app    = NSApplication.shared
+app.setActivationPolicy(.regular)
 let window = NSWindow(
     contentRect: NSMakeRect(0, 0, 640, 640),
     styleMask: [.titled, .closable, .resizable],
@@ -133,4 +134,5 @@ let view = GameView(frame: window.contentView!.bounds,
 view.autoresizingMask = [.width, .height]
 window.contentView = view
 window.makeKeyAndOrderFront(nil)
+app.activate(ignoringOtherApps: true)
 app.run()
